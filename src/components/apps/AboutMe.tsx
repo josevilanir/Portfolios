@@ -71,7 +71,7 @@ export default function AboutMe() {
       <div className="mt-auto bg-gradient-to-r from-blue-500/10 to-purple-500/10
         rounded-xl p-4 border border-blue-400/20">
         <p className="text-xs text-white/60 italic text-center">
-          "Código limpo não é sobre ser bonito — é sobre ser preciso."
+          &ldquo;Código limpo não é sobre ser bonito — é sobre ser preciso.&rdquo;
         </p>
       </div>
     </div>
