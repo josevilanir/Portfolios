@@ -5,6 +5,7 @@ import { useWindowStore } from '@/store/useWindowStore'
 import TopBar from './TopBar'
 import Dock from './Dock'
 import WindowFrame from './WindowFrame'
+import TitleUpdater from './TitleUpdater'
 
 // Lazy load apps
 const AboutMe = dynamic(() => import('@/components/apps/AboutMe'))
@@ -58,6 +59,7 @@ export default function Desktop() {
           bg-cyan-500/10 blur-[80px] animate-pulse" style={{ animationDuration: '10s', animationDelay: '4s' }} />
       </div>
 
+      <TitleUpdater />
       <TopBar />
 
       {/* Desktop area (between TopBar and Dock) */}
