@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type AppId = 'about' | 'terminal' | 'projects' | 'skills' | 'contact'
+export type AppId = 'about' | 'terminal' | 'projects' | 'skills' | 'contact' | 'browser'
 
 export interface WindowInstance {
   id: AppId
@@ -27,6 +27,7 @@ const APP_DEFAULTS: Record<AppId, { title: string }> = {
   projects: { title: 'Projetos' },
   skills: { title: 'Skills & Stack' },
   contact: { title: 'Contato' },
+  browser: { title: 'Projetos ao Vivo' },
 }
 
 export const useWindowStore = create<WindowStore>((set, get) => ({

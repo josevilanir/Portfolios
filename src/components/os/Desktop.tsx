@@ -13,6 +13,7 @@ const TerminalApp = dynamic(() => import('@/components/apps/TerminalApp'))
 const Projects = dynamic(() => import('@/components/apps/Projects'))
 const Skills = dynamic(() => import('@/components/apps/Skills'))
 const Contact = dynamic(() => import('@/components/apps/Contact'))
+const BrowserApp = dynamic(() => import('@/components/apps/BrowserApp'))
 
 const APP_COMPONENTS = {
   about: AboutMe,
@@ -20,6 +21,7 @@ const APP_COMPONENTS = {
   projects: Projects,
   skills: Skills,
   contact: Contact,
+  browser: BrowserApp,
 }
 
 const APP_SIZES: Record<string, { w: number; h: number }> = {
@@ -28,6 +30,7 @@ const APP_SIZES: Record<string, { w: number; h: number }> = {
   projects: { w: 680, h: 500 },
   skills: { w: 520, h: 560 },
   contact: { w: 420, h: 460 },
+  browser: { w: 940, h: 620 },
 }
 
 const DESKTOP_ICONS = [
