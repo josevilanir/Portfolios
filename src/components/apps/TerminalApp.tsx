@@ -29,6 +29,9 @@ const INITIAL_OUTPUT = [
 ]
 
 const COMMANDS: Record<string, string[]> = {
+  whoami: [
+    'José Vilanir — Full Stack | Mobile | Data Engineer',
+  ],
   help: [
     'Comandos disponíveis:',
     '  whoami     — Identidade do desenvolvedor',
