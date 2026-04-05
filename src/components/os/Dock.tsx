@@ -4,6 +4,7 @@ import MacOSDock from '@/components/ui/mac-os-dock'
 import { useWindowStore, AppId } from '@/store/useWindowStore'
 
 const CDN = 'https://cdn.jim-nielsen.com/macos/1024'
+const CDN_IOS = 'https://cdn.jim-nielsen.com/ios/512'
 
 const DOCK_APPS = [
   { id: 'about',    name: 'Sobre Mim', icon: `${CDN}/photos-2021-05-28.png` },
@@ -11,7 +12,7 @@ const DOCK_APPS = [
   { id: 'terminal', name: 'Terminal',  icon: `${CDN}/terminal-2021-06-03.png` },
   { id: 'skills',   name: 'Skills',    icon: `${CDN}/notes-2021-05-25.png` },
   { id: 'contact',  name: 'Contato',   icon: `${CDN}/mail-2021-05-25.png` },
-  { id: 'browser',  name: 'Projetos ao Vivo', icon: `${CDN}/safari-2021-05-28.png` },
+  { id: 'browser',  name: 'Projetos ao Vivo', icon: `${CDN_IOS}/safari-2025-10-20.png`, rounded: true },
 ]
 
 export default function Dock() {

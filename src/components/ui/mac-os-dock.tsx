@@ -7,6 +7,7 @@ interface DockApp {
   id: string;
   name: string;
   icon: string;
+  rounded?: boolean;
 }
 
 interface MacOSDockProps {
@@ -283,7 +284,8 @@ const MacOSDock: React.FC<MacOSDockProps> = ({
                 height={scaledSize}
                 className="object-contain"
                 style={{
-                  filter: `drop-shadow(0 ${scale > 1.2 ? Math.max(2, baseIconSize * 0.05) : Math.max(1, baseIconSize * 0.03)}px ${scale > 1.2 ? Math.max(4, baseIconSize * 0.1) : Math.max(2, baseIconSize * 0.06)}px rgba(0,0,0,${0.2 + (scale - 1) * 0.15}))`
+                  filter: `drop-shadow(0 ${scale > 1.2 ? Math.max(2, baseIconSize * 0.05) : Math.max(1, baseIconSize * 0.03)}px ${scale > 1.2 ? Math.max(4, baseIconSize * 0.1) : Math.max(2, baseIconSize * 0.06)}px rgba(0,0,0,${0.2 + (scale - 1) * 0.15}))`,
+                  ...(app.rounded && { borderRadius: '22%', padding: '8%' })
                 }}
               />
 
