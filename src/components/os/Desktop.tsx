@@ -1,6 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { Rnd } from 'react-rnd'
 import { useWindowStore } from '@/store/useWindowStore'
 import TopBar from './TopBar'
 import Dock from './Dock'
@@ -40,8 +42,48 @@ const DESKTOP_ICONS = [
   { label: 'Terminal', id: 'terminal' as const, emoji: '🖥️' },
 ]
 
+const DEFAULT_ICON_POSITIONS: Record<string, { x: number; y: number }> = {
+  about:    { x: 16, y: 16 },
+  projects: { x: 16, y: 104 },
+  skills:   { x: 16, y: 192 },
+  terminal: { x: 16, y: 280 },
+}
+
 export default function Desktop() {
   const { windows, openWindow } = useWindowStore()
+  const [iconPositions, setIconPositions] = useState<Record<string, { x: number; y: number }>>(DEFAULT_ICON_POSITIONS)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('vilanir-icon-positions')
+      if (saved) setIconPositions({ ...DEFAULT_ICON_POSITIONS, ...JSON.parse(saved) })
+    } catch { /* ignore */ }
+  }, [])
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isDraggingRef = useRef(false)
+
+  const handleIconDragStop = useCallback((id: string, x: number, y: number) => {
+    const next = { ...iconPositions, [id]: { x, y } }
+    setIconPositions(next)
+    localStorage.setItem('vilanir-icon-positions', JSON.stringify(next))
+  }, [iconPositions])
+
+  const handleIconClick = useCallback((id: string) => {
+    if (isDraggingRef.current) return
+    if (clickTimerRef.current) {
+      // Double click
+      clearTimeout(clickTimerRef.current)
+      clickTimerRef.current = null
+      openWindow(id as Parameters<typeof openWindow>[0])
+      setSelectedIcon(null)
+    } else {
+      setSelectedIcon(id)
+      clickTimerRef.current = setTimeout(() => {
+        clickTimerRef.current = null
+      }, 300)
+    }
+  }, [openWindow])
 
   const visibleWindows = windows.filter((w) => !w.isMinimized)
 
@@ -66,28 +108,50 @@ export default function Desktop() {
       <TopBar />
 
       {/* Desktop area (between TopBar and Dock) */}
-      <div className="absolute inset-0 top-7 bottom-20">
-        {/* Desktop icons */}
-        <div className="absolute top-4 left-4 flex flex-col gap-4">
-          {DESKTOP_ICONS.map((icon) => (
-            <button
+      <div
+        className="absolute inset-0 top-7 bottom-20"
+        onClick={() => setSelectedIcon(null)}
+      >
+        {/* Draggable desktop icons */}
+        {DESKTOP_ICONS.map((icon) => {
+          const pos = iconPositions[icon.id] ?? DEFAULT_ICON_POSITIONS[icon.id]
+          const isSelected = selectedIcon === icon.id
+          return (
+            <Rnd
               key={icon.id}
-              onDoubleClick={() => openWindow(icon.id)}
-              className="flex flex-col items-center gap-1.5 w-16 group"
+              position={pos}
+              size={{ width: 72, height: 88 }}
+              enableResizing={false}
+              dragAxis="both"
+              bounds="parent"
+              onDragStart={() => { isDraggingRef.current = false }}
+              onDrag={() => { isDraggingRef.current = true }}
+              onDragStop={(_e, d) => handleIconDragStop(icon.id, d.x, d.y)}
+              style={{ zIndex: 10 }}
+              className="cursor-default"
             >
-              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md
-                border border-white/20 flex items-center justify-center text-2xl
-                group-hover:bg-white/20 group-hover:scale-105 transition-all duration-150
-                shadow-lg">
-                {icon.emoji}
-              </div>
-              <span className="text-white text-[11px] font-medium text-center
-                drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] leading-tight px-1">
-                {icon.label}
-              </span>
-            </button>
-          ))}
-        </div>
+              <button
+                className="flex flex-col items-center gap-1.5 w-full h-full group"
+                onClick={(e) => { e.stopPropagation(); handleIconClick(icon.id) }}
+              >
+                <div className={`w-14 h-14 rounded-2xl backdrop-blur-md
+                  border flex items-center justify-center text-2xl
+                  transition-all duration-150 shadow-lg
+                  ${isSelected
+                    ? 'bg-white/30 border-white/50 scale-105'
+                    : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
+                  }`}>
+                  {icon.emoji}
+                </div>
+                <span className={`text-white text-[11px] font-medium text-center
+                  leading-tight px-1 rounded
+                  ${isSelected ? 'bg-blue-500/60' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}>
+                  {icon.label}
+                </span>
+              </button>
+            </Rnd>
+          )
+        })}
 
         {/* Windows */}
         {visibleWindows.map((win) => {
