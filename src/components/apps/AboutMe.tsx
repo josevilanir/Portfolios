@@ -125,15 +125,17 @@ export default function AboutMe() {
             }}
           >
             <div 
-              className="w-full h-full flex items-center justify-center" 
+              className="w-full h-full flex items-center justify-center overflow-hidden" 
               style={{
                 borderRadius: '16px',
                 background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
               }}
             >
-              <span className="text-[40px] font-black text-white tracking-widest drop-shadow-lg">
-                JV
-              </span>
+              <img 
+                src="/vilanir.png" 
+                alt="José Vilanir"
+                className="w-full h-full object-cover" 
+              />
             </div>
           </div>
         </div>
