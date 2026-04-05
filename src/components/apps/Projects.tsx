@@ -143,8 +143,10 @@ export default function Projects() {
             <button
               key={project.id}
               onClick={() => setSelected(project)}
-              className={`group relative flex flex-col gap-2 p-4 rounded-2xl border ${project.borderColor} text-left transition-all duration-300 hover:-translate-y-0.5`}
+              className={`group relative flex flex-col rounded-2xl border ${project.borderColor} text-left transition-all duration-300 hover:-translate-y-0.5`}
               style={{
+                padding: '20px',
+                gap: '12px',
                 background: `linear-gradient(135deg, ${project.glowBg} 0%, rgba(20,18,35,0.85) 100%)`,
                 backdropFilter: 'blur(8px)',
                 boxShadow: `${project.shadowColor}, inset 0 1px 0 rgba(255,255,255,0.04)`,
@@ -157,18 +159,18 @@ export default function Projects() {
                 className={`${project.folderColor} transition-transform duration-300 group-hover:scale-105 shrink-0`}
               />
 
-              <div className="flex flex-col gap-1 text-left">
-                <p className="text-base font-bold text-white leading-tight">{project.name}</p>
-                <div className="flex items-center gap-1.5 text-white/45 text-xs">
+              <div className="flex flex-col text-left" style={{ gap: '4px' }}>
+                <p className="text-base font-bold text-white leading-tight m-0">{project.name}</p>
+                <div className="flex items-center text-white/45 text-xs m-0" style={{ gap: '6px' }}>
                   {TYPE_ICON[project.type]}
                   <span>{TYPE_LABEL[project.type]}</span>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 mt-auto">
+              <div className="flex flex-wrap mt-auto" style={{ gap: '6px', paddingTop: '8px' }}>
                 {project.stack.slice(0, 3).map((s) => (
-                  <span key={s} className="text-[12px] px-3 py-1 rounded-full text-white/70"
-                    style={{ background: 'rgba(255,255,255,0.07)' }}>
+                  <span key={s} className="text-[12px] rounded-full text-white/70"
+                    style={{ padding: '4px 12px', background: 'rgba(255,255,255,0.07)' }}>
                     {s}
                   </span>
                 ))}
