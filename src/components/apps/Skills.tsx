@@ -120,14 +120,14 @@ export default function Skills() {
       {/* Cards grid */}
       <div
         key={animKey}
-        className="flex-1 overflow-auto p-4 grid grid-cols-2 gap-3 content-start"
-        style={{ animation: 'skillsFadeIn 0.25s ease forwards' }}
+        className="flex-1 overflow-auto grid grid-cols-2 content-start"
+        style={{ padding: '28px 24px 24px', gap: '16px', animation: 'skillsFadeIn 0.25s ease forwards' }}
       >
         {cat.skills.map((skill, i) => (
           <div
             key={skill.name}
-            className={`relative rounded-xl border ${cat.border} bg-white/5 backdrop-blur-md p-4 flex flex-col gap-3 shadow-lg ${cat.glow}`}
-            style={{ animationDelay: `${i * 40}ms`, animation: 'skillsSlideUp 0.3s ease forwards', opacity: 0 }}
+            className={`relative rounded-xl border ${cat.border} bg-white/5 hover:bg-white/10 backdrop-blur-md flex flex-col gap-3 shadow-lg ${cat.glow} transition-all duration-200 hover:scale-[1.02] cursor-default`}
+            style={{ padding: '18px 20px', animationDelay: `${i * 40}ms`, animation: 'skillsSlideUp 0.3s ease forwards', opacity: 0 }}
           >
             {/* Header */}
             <div className="flex items-end justify-between">

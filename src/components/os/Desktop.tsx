@@ -27,11 +27,11 @@ const APP_COMPONENTS = {
 }
 
 const APP_SIZES: Record<string, { w: number; h: number }> = {
-  about: { w: 580, h: 460 },
-  terminal: { w: 660, h: 520 },
-  projects: { w: 680, h: 500 },
-  skills: { w: 520, h: 560 },
-  contact: { w: 420, h: 460 },
+  about: { w: 820, h: 640 },
+  terminal: { w: 800, h: 600 },
+  projects: { w: 820, h: 600 },
+  skills: { w: 820, h: 600 },
+  contact: { w: 600, h: 500 },
   browser: { w: 940, h: 620 },
 }
 

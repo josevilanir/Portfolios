@@ -104,40 +104,21 @@ export default function AboutMe() {
       <div className="flex" style={{ gap: '16px' }}>
         {/* Avatar — isolated square card */}
         <div
-          className="flex-shrink-0 flex items-center justify-center"
+          className="flex-shrink-0 flex items-center justify-center overflow-hidden"
           style={{
             width: '120px', 
             height: '120px',
-            padding: '10px',
             borderRadius: '24px',
             background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)'
+            boxShadow: '0 0 25px rgba(168, 85, 247, 0.2)'
           }}
         >
-          <div 
-            className="w-full h-full" 
-            style={{
-              padding: '2px',
-              borderRadius: '18px',
-              background: 'linear-gradient(135deg, #0ea5e9, #a855f7)',
-              boxShadow: '0 0 25px rgba(168, 85, 247, 0.4)'
-            }}
-          >
-            <div 
-              className="w-full h-full flex items-center justify-center overflow-hidden" 
-              style={{
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #3b82f6, #9333ea)',
-              }}
-            >
-              <img 
-                src="/vilanir.png" 
-                alt="José Vilanir"
-                className="w-full h-full object-cover" 
-              />
-            </div>
-          </div>
+          <img 
+            src="/vilanir.png" 
+            alt="José Vilanir"
+            className="w-full h-full object-cover" 
+          />
         </div>
 
         {/* Name + badges card */}

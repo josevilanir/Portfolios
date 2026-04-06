@@ -28,6 +28,12 @@ const PROJECTS = [
     url: 'https://evilly-brownies.vercel.app/',
     emoji: '🍫',
   },
+  {
+    id: 'movie-night',
+    name: 'Movie Night',
+    url: 'https://imersao-codeminer42.vercel.app/',
+    emoji: '🎬',
+  },
 ]
 
 export default function BrowserApp() {
