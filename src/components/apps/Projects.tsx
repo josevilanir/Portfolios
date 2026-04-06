@@ -28,6 +28,7 @@ const PROJECTS: Project[] = [
     borderColor: 'border-blue-500/60',
     shadowColor: '0 0 20px rgba(59,130,246,0.35)',
     glowBg: 'rgba(59,130,246,0.06)',
+    github: 'https://github.com/josevilanir/gym_tracker',
   },
   {
     id: 'mural-oracao',
@@ -39,6 +40,8 @@ const PROJECTS: Project[] = [
     borderColor: 'border-violet-500/60',
     shadowColor: '0 0 20px rgba(139,92,246,0.35)',
     glowBg: 'rgba(139,92,246,0.06)',
+    github: 'https://github.com/josevilanir/mural-de-oracao',
+    demo: 'https://mural-de-oracao-two.vercel.app/',
   },
   {
     id: 'codeminer42',
@@ -52,6 +55,57 @@ const PROJECTS: Project[] = [
     glowBg: 'rgba(6,182,212,0.06)',
     github: 'https://github.com/josevilanir/ImersaoCodeMiner42',
     demo: 'https://imersao-codeminer42.vercel.app/',
+  },
+  {
+    id: 'marvin',
+    name: 'Marvin',
+    description: 'Assistente de voz pessoal com reconhecimento de fala, NLP, controle do sistema e integrações com Spotify, YouTube e WhatsApp.',
+    stack: ['Python', 'SpeechRecognition', 'Selenium', 'Spotify API'],
+    type: 'fullstack',
+    folderColor: 'text-sky-400',
+    borderColor: 'border-sky-500/60',
+    shadowColor: '0 0 20px rgba(14,165,233,0.35)',
+    glowBg: 'rgba(14,165,233,0.06)',
+    github: 'https://github.com/josevilanir/Marvin',
+  },
+  {
+    id: 'jukebox',
+    name: 'Jukebox',
+    description: 'App de música colaborativa em tempo real com ActionCable, zero Redis e zero React — arquitetura Rails 8 full Postgres.',
+    stack: ['Ruby on Rails', 'PostgreSQL', 'Hotwire', 'Tailwind'],
+    type: 'fullstack',
+    folderColor: 'text-orange-400',
+    borderColor: 'border-orange-500/60',
+    shadowColor: '0 0 20px rgba(249,115,22,0.35)',
+    glowBg: 'rgba(249,115,22,0.06)',
+    github: 'https://github.com/josevilanir/jukebox',
+    demo: 'https://jukebox-app.fly.dev',
+  },
+  {
+    id: 'comic-creator',
+    name: 'Manga Creator',
+    description: 'Plataforma fullstack para download, organização e leitura de mangás com biblioteca pessoal e autenticação JWT multi-usuário.',
+    stack: ['Python', 'Flask', 'JavaScript', 'Docker'],
+    type: 'fullstack',
+    folderColor: 'text-rose-400',
+    borderColor: 'border-rose-500/60',
+    shadowColor: '0 0 20px rgba(244,63,94,0.35)',
+    glowBg: 'rgba(244,63,94,0.06)',
+    github: 'https://github.com/josevilanir/Comic_Creator',
+    demo: 'https://mangacreator.netlify.app',
+  },
+  {
+    id: 'evilly-brownies',
+    name: 'Evilly Brownies',
+    description: 'Site institucional para confeitaria artesanal com cardápio, identidade visual e experiência de compra.',
+    stack: ['Next.js', 'JavaScript', 'CSS'],
+    type: 'web',
+    folderColor: 'text-amber-400',
+    borderColor: 'border-amber-500/60',
+    shadowColor: '0 0 20px rgba(245,158,11,0.35)',
+    glowBg: 'rgba(245,158,11,0.06)',
+    github: 'https://github.com/josevilanir/EvillyBrownies',
+    demo: 'https://evilly-brownies.vercel.app/',
   },
   {
     id: 'vilanir-os',
@@ -224,10 +278,13 @@ export default function Projects() {
 
         <div className="grid grid-cols-2 gap-4">
           {PROJECTS.map((project) => (
-            <button
+            <div
               key={project.id}
               onClick={() => handleSelect(project)}
-              className={`group relative flex flex-col rounded-2xl border ${project.borderColor} text-left transition-all duration-300 hover:-translate-y-0.5`}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && handleSelect(project)}
+              className={`group relative flex flex-col rounded-2xl border ${project.borderColor} text-left transition-all duration-300 hover:-translate-y-0.5 cursor-pointer`}
               style={{
                 padding: '20px',
                 gap: '12px',
@@ -259,7 +316,20 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
-            </button>
+
+              {project.demo && (
+                <a
+                  href={project.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1.5 self-start text-[11px] px-3 py-1.5 rounded-lg border border-white/10 text-white/50 hover:text-white/90 hover:bg-white/10 transition-all"
+                  style={{ background: 'rgba(255,255,255,0.05)' }}
+                >
+                  <ExternalLink size={11} /> Preview
+                </a>
+              )}
+            </div>
           ))}
         </div>
       </div>
