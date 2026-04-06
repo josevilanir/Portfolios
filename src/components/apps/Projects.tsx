@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Folder, GitBranch, ExternalLink, Smartphone, Globe, Code2 } from 'lucide-react'
+import { Folder, GitBranch, ExternalLink, Smartphone, Globe, Code2, Monitor, Info } from 'lucide-react'
 
 interface Project {
   id: string
@@ -13,6 +13,8 @@ interface Project {
   borderColor: string
   shadowColor: string
   glowBg: string
+  github?: string
+  demo?: string
 }
 
 const PROJECTS: Project[] = [
@@ -40,14 +42,16 @@ const PROJECTS: Project[] = [
   },
   {
     id: 'codeminer42',
-    name: 'Imersão CodeMiner42',
-    description: 'Projeto desenvolvido durante imersão intensiva com desafios de Front-end e Back-end integrado.',
-    stack: ['React', 'Node.js', 'TypeScript'],
-    type: 'web',
+    name: 'Movie Night',
+    description: 'App full-stack para grupos decidirem qual filme assistir juntos. Host cria sala, convidados entram por código, sugerem filmes e um vencedor é sorteado.',
+    stack: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'Prisma', 'Redis'],
+    type: 'fullstack',
     folderColor: 'text-cyan-400',
     borderColor: 'border-cyan-500/60',
     shadowColor: '0 0 20px rgba(6,182,212,0.35)',
     glowBg: 'rgba(6,182,212,0.06)',
+    github: 'https://github.com/josevilanir/ImersaoCodeMiner42',
+    demo: 'https://imersao-codeminer42.vercel.app/',
   },
   {
     id: 'vilanir-os',
@@ -76,56 +80,136 @@ const TYPE_LABEL = {
 
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null)
+  const [tab, setTab] = useState<'info' | 'preview'>('info')
+  const [iframeError, setIframeError] = useState(false)
+
+  function handleSelect(project: Project) {
+    setSelected(project)
+    setTab('info')
+    setIframeError(false)
+  }
 
   if (selected) {
     return (
-      <div className="h-full w-full text-white overflow-y-auto overflow-x-hidden">
-        <div className="max-w-5xl mx-auto w-full flex flex-col px-8 py-8 md:px-12 lg:px-16 gap-5">
+      <div className="h-full w-full flex flex-col text-white overflow-hidden">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-10 pt-8 pb-4 shrink-0 max-w-3xl mx-auto w-full">
           <button
             onClick={() => setSelected(null)}
-            className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors w-fit"
+            className="flex items-center gap-2 text-xs text-white/40 hover:text-white/70 transition-colors"
           >
             ← Voltar para projetos
           </button>
+          <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 border border-white/10">
+            <button
+              onClick={() => setTab('info')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+                tab === 'info' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60'
+              }`}
+            >
+              <Info size={12} /> Info
+            </button>
+            {selected.demo && (
+              <button
+                onClick={() => { setTab('preview'); setIframeError(false) }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+                  tab === 'preview' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/60'
+                }`}
+              >
+                <Monitor size={12} /> Preview
+              </button>
+            )}
+          </div>
+        </div>
 
-          <div
-            className={`rounded-2xl p-6 flex items-center gap-5 border ${selected.borderColor} bg-black/20 backdrop-blur-sm`}
-            style={{ boxShadow: selected.shadowColor, background: `linear-gradient(135deg, ${selected.glowBg}, rgba(0,0,0,0.3))` }}
-          >
-            <Folder size={48} fill="currentColor" className={selected.folderColor} />
-            <div>
-              <h2 className="text-2xl font-bold">{selected.name}</h2>
-              <div className="flex items-center gap-1.5 mt-1.5 text-white/50 text-xs">
-                {TYPE_ICON[selected.type]}
-                {TYPE_LABEL[selected.type]}
+        {/* Tab: Info */}
+        {tab === 'info' && (
+          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="max-w-3xl mx-auto w-full flex flex-col px-10 pb-20 gap-10 pt-6">
+              <div
+                className={`rounded-3xl p-12 flex flex-col sm:flex-row items-center sm:items-start gap-8 border ${selected.borderColor} bg-black/20 backdrop-blur-sm`}
+                style={{ boxShadow: selected.shadowColor, background: `linear-gradient(135deg, ${selected.glowBg}, rgba(0,0,0,0.3))` }}
+              >
+                <Folder size={48} fill="currentColor" className={selected.folderColor} />
+                <div>
+                  <h2 className="text-3xl font-bold leading-tight">{selected.name}</h2>
+                  <div className="flex items-center gap-1.5 mt-2 text-white/50 text-sm">
+                    {TYPE_ICON[selected.type]}
+                    {TYPE_LABEL[selected.type]}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-8 border border-white/10">
+                <p className="text-base text-white/75 leading-relaxed">{selected.description}</p>
+              </div>
+
+              <div className="px-2">
+                <p className="text-xs text-white/40 uppercase tracking-widest mb-4">Stack</p>
+                <div className="flex flex-wrap gap-3">
+                  {selected.stack.map((s) => (
+                    <span key={s} className="text-xs px-3 py-1 bg-white/5 rounded-full text-white/70">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-3 pb-4">
+                {selected.github && (
+                  <a
+                    href={selected.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-white/8 rounded-xl border border-white/10 text-sm text-white/70 hover:bg-white/15 transition-colors"
+                  >
+                    <GitBranch size={14} /> GitHub
+                  </a>
+                )}
+                {selected.demo && (
+                  <a
+                    href={selected.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-white/8 rounded-xl border border-white/10 text-sm text-white/70 hover:bg-white/15 transition-colors"
+                  >
+                    <ExternalLink size={14} /> Demo
+                  </a>
+                )}
               </div>
             </div>
           </div>
+        )}
 
-          <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-            <p className="text-sm text-white/75 leading-relaxed">{selected.description}</p>
+        {/* Tab: Preview */}
+        {tab === 'preview' && selected.demo && (
+          <div className="flex-1 relative overflow-hidden rounded-2xl mx-8 sm:mx-12 md:mx-16 mb-12 max-w-4xl self-center w-full shadow-2xl">
+            {iframeError ? (
+              <div className="h-full flex flex-col items-center justify-center gap-4 bg-white/3 rounded-xl border border-white/10">
+                <Monitor size={32} className="text-white/20" />
+                <p className="text-sm text-white/40 text-center max-w-xs leading-relaxed">
+                  Este site não permite ser exibido em iframe.<br />
+                  <a
+                    href={selected.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400/70 hover:text-cyan-400 underline underline-offset-2 transition-colors"
+                  >
+                    Abrir em nova aba →
+                  </a>
+                </p>
+              </div>
+            ) : (
+              <iframe
+                src={selected.demo}
+                className="w-full h-full rounded-xl border border-white/10"
+                style={{ background: '#000' }}
+                onError={() => setIframeError(true)}
+                title={`${selected.name} preview`}
+              />
+            )}
           </div>
-
-          <div>
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-3">Stack</p>
-            <div className="flex flex-wrap gap-2">
-              {selected.stack.map((s) => (
-                <span key={s} className="text-xs px-3 py-1 bg-white/5 rounded-full text-white/70">
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-3 mt-auto pb-4">
-            <button className="flex items-center gap-2 px-4 py-2 bg-white/8 rounded-xl border border-white/10 text-sm text-white/70 hover:bg-white/15 transition-colors">
-              <GitBranch size={14} /> GitHub
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white/8 rounded-xl border border-white/10 text-sm text-white/70 hover:bg-white/15 transition-colors">
-              <ExternalLink size={14} /> Demo
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     )
   }
@@ -142,7 +226,7 @@ export default function Projects() {
           {PROJECTS.map((project) => (
             <button
               key={project.id}
-              onClick={() => setSelected(project)}
+              onClick={() => handleSelect(project)}
               className={`group relative flex flex-col rounded-2xl border ${project.borderColor} text-left transition-all duration-300 hover:-translate-y-0.5`}
               style={{
                 padding: '20px',
