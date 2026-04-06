@@ -6,8 +6,8 @@ const CONTACTS = [
   {
     icon: <GitBranch size={20} />,
     label: 'GitHub',
-    handle: '@josevilar',
-    href: 'https://github.com/josevilar',
+    handle: '@josevilanir',
+    href: 'https://github.com/josevilanir',
     color: 'from-gray-700 to-gray-900',
     hoverColor: 'hover:ring-gray-500/40',
   },

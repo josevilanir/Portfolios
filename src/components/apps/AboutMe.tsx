@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { MapPin, Calendar, Code2, Smartphone, Database, Globe, Atom, FileCode2, Server, FileJson, Terminal, Coffee, Image as ImageIcon, LayoutDashboard, Layers } from 'lucide-react'
 
 /* ─── Data ────────────────────────────────────────────────────── */
@@ -47,6 +48,15 @@ const TECH_STACK = [
 /* ─── Subcomponents ───────────────────────────────────────────── */
 
 function TechOrb({ icon, from, to, glow, label }: (typeof TECH_STACK)[number]) {
+  const [tapped, setTapped] = useState(false)
+
+  function handleClick() {
+    setTapped(true)
+    setTimeout(() => setTapped(false), 1500)
+  }
+
+  const showTooltip = tapped
+
   return (
     <div
       className="group relative flex-shrink-0 flex items-center justify-center cursor-default select-none transition-transform duration-200 hover:-translate-y-1 hover:scale-110"
@@ -58,6 +68,7 @@ function TechOrb({ icon, from, to, glow, label }: (typeof TECH_STACK)[number]) {
         border: `1px solid ${glow.replace('0.5)', '0.35)')}`,
         boxShadow: `0 0 12px ${glow}, 0 0 24px ${glow.replace('0.5)', '0.2)')}, inset 0 0 8px ${glow.replace('0.5)', '0.15)')}`,
       }}
+      onClick={handleClick}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.boxShadow =
           `0 0 18px ${glow}, 0 0 36px ${glow.replace('0.5)', '0.35)')}, inset 0 0 12px ${glow.replace('0.5)', '0.25)')}`
@@ -68,10 +79,11 @@ function TechOrb({ icon, from, to, glow, label }: (typeof TECH_STACK)[number]) {
       }}
     >
       <span style={{ color: to, filter: `drop-shadow(0 0 5px ${to})` }}>{icon}</span>
-      
-      {/* Sleek Tooltip */}
+
+      {/* Tooltip — hover no desktop, tap no mobile */}
       <span
-        className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-1 rounded-[6px] text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 group-hover:-translate-y-1 transition-all duration-200 pointer-events-none z-50"
+        className={`absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap px-2.5 py-1 rounded-[6px] text-[10px] font-bold text-white transition-all duration-200 pointer-events-none z-50
+          ${showTooltip ? 'opacity-100 -translate-y-1' : 'opacity-0 group-hover:opacity-100 group-hover:-translate-y-1'}`}
         style={{
           background: 'rgba(15,23,42,0.9)',
           border: `1px solid ${glow.replace('0.5)', '0.4)')}`,
