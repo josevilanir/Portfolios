@@ -99,7 +99,7 @@ export default function Skills() {
   return (
     <div className="h-full flex flex-col overflow-hidden text-white">
       {/* Tabs */}
-      <div className="flex items-center justify-center gap-1 px-4 pt-3 pb-0 shrink-0 border-b border-white/5">
+      <div className="flex items-center gap-1 px-4 pt-3 pb-0 shrink-0 border-b border-white/5 overflow-x-auto scrollbar-none">
         {CATEGORIES.map((c, i) => (
           <button
             key={c.label}
