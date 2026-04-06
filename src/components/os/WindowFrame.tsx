@@ -55,7 +55,7 @@ export default function WindowFrame({
       {...(forceFullscreen
         ? {
             position: { x: 0, y: 28 },
-            size: { width: '100vw', height: 'calc(100vh - 28px - 72px)' },
+            size: { width: '100vw', height: 'calc(100dvh - 28px - 72px)' },
             disableDragging: true,
             enableResizing: false,
           }

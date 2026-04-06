@@ -101,12 +101,12 @@ export default function AboutMe() {
       }}
     >
       {/* ── Row 1: Avatar card + Name/Badges card ── */}
-      <div className="flex" style={{ gap: '16px' }}>
+      <div className="flex flex-col sm:flex-row" style={{ gap: '16px' }}>
         {/* Avatar — isolated square card */}
         <div
-          className="flex-shrink-0 flex items-center justify-center overflow-hidden"
+          className="flex-shrink-0 flex items-center justify-center overflow-hidden self-center sm:self-auto"
           style={{
-            width: '120px', 
+            width: '120px',
             height: '120px',
             borderRadius: '24px',
             background: 'rgba(255,255,255,0.03)',
@@ -114,10 +114,10 @@ export default function AboutMe() {
             boxShadow: '0 0 25px rgba(168, 85, 247, 0.2)'
           }}
         >
-          <img 
-            src="/vilanir.png" 
+          <img
+            src="/vilanir.png"
             alt="José Vilanir"
-            className="w-full h-full object-cover" 
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -133,7 +133,7 @@ export default function AboutMe() {
             boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)'
           }}
         >
-          <h1 className="text-3xl font-black tracking-tight text-white drop-shadow-md">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-md">
             José Vilanir
           </h1>
           <div className="flex flex-wrap" style={{ gap: '10px' }}>
@@ -178,15 +178,15 @@ export default function AboutMe() {
       </div>
 
       {/* ── Info cards ── */}
-      <div className="grid grid-cols-3" style={{ gap: '16px' }}>
+      <div className="grid grid-cols-3" style={{ gap: '8px' }}>
         {HIGHLIGHTS.map((h, i) => (
           <div
             key={i}
             className="flex flex-col relative overflow-hidden"
             style={{
-              gap: '12px',
-              padding: '20px',
-              borderRadius: '20px',
+              gap: '8px',
+              padding: '12px',
+              borderRadius: '16px',
               background: 'rgba(255,255,255,0.03)',
               border: `1px solid rgba(255,255,255,0.08)`,
               boxShadow: `0 0 30px ${h.shadowColor}`,

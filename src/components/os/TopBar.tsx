@@ -33,7 +33,7 @@ export default function TopBar() {
       </div>
 
       {/* Center: Date */}
-      <div className="absolute left-1/2 -translate-x-1/2">
+      <div className="absolute left-1/2 -translate-x-1/2 hidden sm:block">
         <span suppressHydrationWarning className="text-white/60 text-xs capitalize">{date}</span>
       </div>
 

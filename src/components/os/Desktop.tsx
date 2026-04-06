@@ -1,13 +1,21 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useSyncExternalStore } from 'react'
 import { Rnd } from 'react-rnd'
 import { useWindowStore } from '@/store/useWindowStore'
 import TopBar from './TopBar'
 import Dock from './Dock'
 import WindowFrame from './WindowFrame'
 import TitleUpdater from './TitleUpdater'
+
+function subscribeMobile(cb: () => void) {
+  const mq = window.matchMedia('(max-width: 767px)')
+  mq.addEventListener('change', cb)
+  return () => mq.removeEventListener('change', cb)
+}
+const getMobileSnapshot = () => window.matchMedia('(max-width: 767px)').matches
+const getMobileServerSnapshot = () => false
 
 // Lazy load apps
 const AboutMe = dynamic(() => import('@/components/apps/AboutMe'))
@@ -51,6 +59,7 @@ const DEFAULT_ICON_POSITIONS: Record<string, { x: number; y: number }> = {
 
 export default function Desktop() {
   const { windows, openWindow } = useWindowStore()
+  const isMobile = useSyncExternalStore(subscribeMobile, getMobileSnapshot, getMobileServerSnapshot)
   const [iconPositions, setIconPositions] = useState<Record<string, { x: number; y: number }>>(DEFAULT_ICON_POSITIONS)
 
   useEffect(() => {
@@ -112,46 +121,71 @@ export default function Desktop() {
         className="absolute inset-0 top-7 bottom-20"
         onClick={() => setSelectedIcon(null)}
       >
-        {/* Draggable desktop icons */}
-        {DESKTOP_ICONS.map((icon) => {
-          const pos = iconPositions[icon.id] ?? DEFAULT_ICON_POSITIONS[icon.id]
-          const isSelected = selectedIcon === icon.id
-          return (
-            <Rnd
-              key={icon.id}
-              position={pos}
-              size={{ width: 72, height: 88 }}
-              enableResizing={false}
-              dragAxis="both"
-              bounds="parent"
-              onDragStart={() => { isDraggingRef.current = false }}
-              onDrag={() => { isDraggingRef.current = true }}
-              onDragStop={(_e, d) => handleIconDragStop(icon.id, d.x, d.y)}
-              style={{ zIndex: 10 }}
-              className="cursor-default"
-            >
-              <button
-                className="flex flex-col items-center gap-1.5 w-full h-full group"
-                onClick={(e) => { e.stopPropagation(); handleIconClick(icon.id) }}
+        {/* Mobile: centered icon grid with single-tap to open */}
+        {isMobile ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="flex flex-wrap justify-center gap-6 px-8 max-w-xs">
+              {DESKTOP_ICONS.map((icon) => (
+                <button
+                  key={icon.id}
+                  className="flex flex-col items-center gap-2 group active:scale-95 transition-transform duration-100"
+                  onClick={(e) => { e.stopPropagation(); openWindow(icon.id as Parameters<typeof openWindow>[0]) }}
+                >
+                  <div className="w-16 h-16 rounded-2xl backdrop-blur-md
+                    border border-white/20 bg-white/10 flex items-center justify-center text-3xl
+                    shadow-lg active:bg-white/25">
+                    {icon.emoji}
+                  </div>
+                  <span className="text-white text-[11px] font-medium text-center leading-tight
+                    drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                    {icon.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* Desktop: draggable icons */
+          DESKTOP_ICONS.map((icon) => {
+            const pos = iconPositions[icon.id] ?? DEFAULT_ICON_POSITIONS[icon.id]
+            const isSelected = selectedIcon === icon.id
+            return (
+              <Rnd
+                key={icon.id}
+                position={pos}
+                size={{ width: 72, height: 88 }}
+                enableResizing={false}
+                dragAxis="both"
+                bounds="parent"
+                onDragStart={() => { isDraggingRef.current = false }}
+                onDrag={() => { isDraggingRef.current = true }}
+                onDragStop={(_e, d) => handleIconDragStop(icon.id, d.x, d.y)}
+                style={{ zIndex: 10 }}
+                className="cursor-default"
               >
-                <div className={`w-14 h-14 rounded-2xl backdrop-blur-md
-                  border flex items-center justify-center text-2xl
-                  transition-all duration-150 shadow-lg
-                  ${isSelected
-                    ? 'bg-white/30 border-white/50 scale-105'
-                    : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
-                  }`}>
-                  {icon.emoji}
-                </div>
-                <span className={`text-white text-[11px] font-medium text-center
-                  leading-tight px-1 rounded
-                  ${isSelected ? 'bg-blue-500/60' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}>
-                  {icon.label}
-                </span>
-              </button>
-            </Rnd>
-          )
-        })}
+                <button
+                  className="flex flex-col items-center gap-1.5 w-full h-full group"
+                  onClick={(e) => { e.stopPropagation(); handleIconClick(icon.id) }}
+                >
+                  <div className={`w-14 h-14 rounded-2xl backdrop-blur-md
+                    border flex items-center justify-center text-2xl
+                    transition-all duration-150 shadow-lg
+                    ${isSelected
+                      ? 'bg-white/30 border-white/50 scale-105'
+                      : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
+                    }`}>
+                    {icon.emoji}
+                  </div>
+                  <span className={`text-white text-[11px] font-medium text-center
+                    leading-tight px-1 rounded
+                    ${isSelected ? 'bg-blue-500/60' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}>
+                    {icon.label}
+                  </span>
+                </button>
+              </Rnd>
+            )
+          })
+        )}
 
         {/* Windows */}
         {visibleWindows.map((win) => {
