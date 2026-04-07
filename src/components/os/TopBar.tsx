@@ -2,21 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import { Wifi, Battery, Volume2, Search } from 'lucide-react'
+import { useLanguageStore } from '@/store/useLanguageStore'
 
 export default function TopBar() {
   const [time, setTime] = useState('')
   const [date, setDate] = useState('')
+  const { lang, toggle } = useLanguageStore()
 
   useEffect(() => {
     const update = () => {
+      const locale = lang === 'pt' ? 'pt-BR' : 'en-US'
       const now = new Date()
-      setTime(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))
-      setDate(now.toLocaleDateString('pt-BR', { weekday: 'short', month: 'short', day: 'numeric' }))
+      setTime(now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }))
+      setDate(now.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' }))
     }
     update()
     const interval = setInterval(update, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [lang])
 
   return (
     <div
@@ -39,6 +42,16 @@ export default function TopBar() {
 
       {/* Right: System tray */}
       <div className="flex items-center gap-3">
+        <button
+          onClick={toggle}
+          title={lang === 'pt' ? 'Switch to English' : 'Mudar para Português'}
+          className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold
+            border transition-all duration-200 cursor-pointer
+            border-white/20 bg-white/5 text-white/70
+            hover:bg-white/15 hover:text-white hover:border-white/40"
+        >
+          {lang === 'pt' ? '🇧🇷 PT' : '🇺🇸 EN'}
+        </button>
         <Search size={12} className="text-white/60 hover:text-white cursor-pointer transition-colors" />
         <Volume2 size={12} className="text-white/60 hover:text-white cursor-pointer transition-colors" />
         <Wifi size={12} className="text-white/60 hover:text-white cursor-pointer transition-colors" />

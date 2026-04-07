@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useState, useCallback, useRef, useEffect, useSyncExternalStore } from 'react'
 import { Rnd } from 'react-rnd'
 import { useWindowStore } from '@/store/useWindowStore'
+import { useLanguageStore } from '@/store/useLanguageStore'
 import TopBar from './TopBar'
 import Dock from './Dock'
 import WindowFrame from './WindowFrame'
@@ -43,11 +44,16 @@ const APP_SIZES: Record<string, { w: number; h: number }> = {
   browser: { w: 940, h: 620 },
 }
 
-const DESKTOP_ICONS = [
-  { label: 'Sobre Mim', id: 'about' as const, emoji: '👤' },
-  { label: 'Projetos', id: 'projects' as const, emoji: '📁' },
-  { label: 'Skills', id: 'skills' as const, emoji: '⚡' },
-  { label: 'Terminal', id: 'terminal' as const, emoji: '🖥️' },
+type AppIconDef = { type: 'app'; labelPt: string; labelEn: string; id: string; emoji: string }
+type DownloadIconDef = { type: 'download'; labelPt: string; labelEn: string; id: string; emoji: string; href: string }
+type IconDef = AppIconDef | DownloadIconDef
+
+const DESKTOP_ICONS: IconDef[] = [
+  { type: 'app',      labelPt: 'Sobre Mim', labelEn: 'About Me', id: 'about',    emoji: '👤' },
+  { type: 'app',      labelPt: 'Projetos',  labelEn: 'Projects', id: 'projects', emoji: '📁' },
+  { type: 'app',      labelPt: 'Skills',    labelEn: 'Skills',   id: 'skills',   emoji: '⚡' },
+  { type: 'app',      labelPt: 'Terminal',  labelEn: 'Terminal', id: 'terminal', emoji: '🖥️' },
+  { type: 'download', labelPt: 'Currículo', labelEn: 'Resume',   id: 'resume',   emoji: '📄', href: '/Curriculum_FINAL_Polido.pdf' },
 ]
 
 const DEFAULT_ICON_POSITIONS: Record<string, { x: number; y: number }> = {
@@ -55,10 +61,12 @@ const DEFAULT_ICON_POSITIONS: Record<string, { x: number; y: number }> = {
   projects: { x: 16, y: 104 },
   skills:   { x: 16, y: 192 },
   terminal: { x: 16, y: 280 },
+  resume:   { x: 16, y: 368 },
 }
 
 export default function Desktop() {
   const { windows, openWindow } = useWindowStore()
+  const { lang } = useLanguageStore()
   const isMobile = useSyncExternalStore(subscribeMobile, getMobileSnapshot, getMobileServerSnapshot)
   const [iconPositions, setIconPositions] = useState<Record<string, { x: number; y: number }>>(DEFAULT_ICON_POSITIONS)
 
@@ -78,16 +86,23 @@ export default function Desktop() {
     localStorage.setItem('vilanir-icon-positions', JSON.stringify(next))
   }, [iconPositions])
 
-  const handleIconClick = useCallback((id: string) => {
+  const handleIconClick = useCallback((icon: IconDef) => {
     if (isDraggingRef.current) return
     if (clickTimerRef.current) {
       // Double click
       clearTimeout(clickTimerRef.current)
       clickTimerRef.current = null
-      openWindow(id as Parameters<typeof openWindow>[0])
+      if (icon.type === 'download') {
+        const a = document.createElement('a')
+        a.href = icon.href
+        a.download = ''
+        a.click()
+      } else {
+        openWindow(icon.id as Parameters<typeof openWindow>[0])
+      }
       setSelectedIcon(null)
     } else {
-      setSelectedIcon(id)
+      setSelectedIcon(icon.id)
       clickTimerRef.current = setTimeout(() => {
         clickTimerRef.current = null
       }, 300)
@@ -129,16 +144,30 @@ export default function Desktop() {
                 <button
                   key={icon.id}
                   className="flex flex-col items-center gap-2 group active:scale-95 transition-transform duration-100"
-                  onClick={(e) => { e.stopPropagation(); openWindow(icon.id as Parameters<typeof openWindow>[0]) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (icon.type === 'download') {
+                      const a = document.createElement('a')
+                      a.href = icon.href
+                      a.download = ''
+                      a.click()
+                    } else {
+                      openWindow(icon.id as Parameters<typeof openWindow>[0])
+                    }
+                  }}
                 >
-                  <div className="w-16 h-16 rounded-2xl backdrop-blur-md
-                    border border-white/20 bg-white/10 flex items-center justify-center text-3xl
-                    shadow-lg active:bg-white/25">
+                  <div className={`w-16 h-16 rounded-2xl backdrop-blur-md
+                    border flex items-center justify-center text-3xl
+                    shadow-lg active:bg-white/25
+                    ${icon.type === 'download'
+                      ? 'border-emerald-400/40 bg-emerald-500/10'
+                      : 'border-white/20 bg-white/10'
+                    }`}>
                     {icon.emoji}
                   </div>
                   <span className="text-white text-[11px] font-medium text-center leading-tight
                     drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-                    {icon.label}
+                    {lang === 'pt' ? icon.labelPt : icon.labelEn}
                   </span>
                 </button>
               ))}
@@ -165,21 +194,23 @@ export default function Desktop() {
               >
                 <button
                   className="flex flex-col items-center gap-1.5 w-full h-full group"
-                  onClick={(e) => { e.stopPropagation(); handleIconClick(icon.id) }}
+                  onClick={(e) => { e.stopPropagation(); handleIconClick(icon) }}
                 >
                   <div className={`w-14 h-14 rounded-2xl backdrop-blur-md
                     border flex items-center justify-center text-2xl
                     transition-all duration-150 shadow-lg
                     ${isSelected
                       ? 'bg-white/30 border-white/50 scale-105'
-                      : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
+                      : icon.type === 'download'
+                        ? 'bg-emerald-500/10 border-emerald-400/40 group-hover:bg-emerald-500/20 group-hover:scale-105'
+                        : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
                     }`}>
                     {icon.emoji}
                   </div>
                   <span className={`text-white text-[11px] font-medium text-center
                     leading-tight px-1 rounded
                     ${isSelected ? 'bg-blue-500/60' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}>
-                    {icon.label}
+                    {lang === 'pt' ? icon.labelPt : icon.labelEn}
                   </span>
                 </button>
               </Rnd>

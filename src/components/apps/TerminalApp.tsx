@@ -1,42 +1,82 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useLanguageStore, Lang } from '@/store/useLanguageStore'
 
-const INITIAL_OUTPUT = [
-  { type: 'system', text: 'Vilanir OS — Terminal v1.0' },
-  { type: 'system', text: 'Digite "help" para ver os comandos disponíveis.' },
-  { type: 'blank', text: '' },
-]
+const INITIAL_OUTPUT = {
+  pt: [
+    { type: 'system', text: 'Vilanir OS — Terminal v1.0' },
+    { type: 'system', text: 'Digite "help" para ver os comandos disponíveis.' },
+    { type: 'blank',  text: '' },
+  ],
+  en: [
+    { type: 'system', text: 'Vilanir OS — Terminal v1.0' },
+    { type: 'system', text: 'Type "help" to see available commands.' },
+    { type: 'blank',  text: '' },
+  ],
+}
 
-const COMMANDS: Record<string, string[]> = {
-  whoami: [
-    'José Vilanir — Full Stack | Mobile | Data Engineer',
-  ],
-  help: [
-    'Comandos disponíveis:',
-    '  whoami     — Identidade do desenvolvedor',
-    '  exp        — Experiência profissional',
-    '  skills     — Stack técnica completa',
-    '  contact    — Formas de contato',
-    '  clear      — Limpar terminal',
-  ],
-  exp: [
-    'DATAPREV — Data Engineer (2 anos)',
-    '  Apache Spark, Hadoop, Python, Hive, Oracle DB',
-    '  Pipelines ETL, Data Lakes, Processamento em lote',
-  ],
-  skills: [
-    'Frontend:  Next.js · React · TypeScript · Tailwind CSS',
-    'Mobile:    Flutter · Dart',
-    'Backend:   Node.js · Python · REST APIs',
-    'Data:      Apache Spark · Hadoop · Hive · SQL · Oracle',
-    'DevOps:    Docker · Git · CI/CD',
-  ],
-  contact: [
-    'GitHub:    github.com/vilanir',
-    'LinkedIn:  linkedin.com/in/vilanir',
-    'Email:     josevilanir@email.com',
-  ],
+const COMMANDS = {
+  pt: {
+    whoami: ['José Vilanir — Full Stack | Mobile | Data Engineer'],
+    help: [
+      'Comandos disponíveis:',
+      '  whoami     — Identidade do desenvolvedor',
+      '  exp        — Experiência profissional',
+      '  skills     — Stack técnica completa',
+      '  contact    — Formas de contato',
+      '  lang en    — Mudar idioma para inglês',
+      '  lang pt    — Manter idioma em português',
+      '  clear      — Limpar terminal',
+    ],
+    exp: [
+      'DATAPREV — Data Engineer (2 anos)',
+      '  Apache Spark, Hadoop, Python, Hive, Oracle DB',
+      '  Pipelines ETL, Data Lakes, Processamento em lote',
+    ],
+    skills: [
+      'Frontend:  Next.js · React · TypeScript · Tailwind CSS',
+      'Mobile:    Flutter · Dart',
+      'Backend:   Node.js · Python · REST APIs',
+      'Data:      Apache Spark · Hadoop · Hive · SQL · Oracle',
+      'DevOps:    Docker · Git · CI/CD',
+    ],
+    contact: [
+      'GitHub:    github.com/vilanir',
+      'LinkedIn:  linkedin.com/in/vilanir',
+      'Email:     josevilanir@email.com',
+    ],
+  },
+  en: {
+    whoami: ['José Vilanir — Full Stack | Mobile | Data Engineer'],
+    help: [
+      'Available commands:',
+      '  whoami     — Developer identity',
+      '  exp        — Professional experience',
+      '  skills     — Full tech stack',
+      '  contact    — Contact information',
+      '  lang pt    — Switch language to Portuguese',
+      '  lang en    — Keep language in English',
+      '  clear      — Clear terminal',
+    ],
+    exp: [
+      'DATAPREV — Data Engineer (2 years)',
+      '  Apache Spark, Hadoop, Python, Hive, Oracle DB',
+      '  ETL Pipelines, Data Lakes, Batch Processing',
+    ],
+    skills: [
+      'Frontend:  Next.js · React · TypeScript · Tailwind CSS',
+      'Mobile:    Flutter · Dart',
+      'Backend:   Node.js · Python · REST APIs',
+      'Data:      Apache Spark · Hadoop · Hive · SQL · Oracle',
+      'DevOps:    Docker · Git · CI/CD',
+    ],
+    contact: [
+      'GitHub:    github.com/vilanir',
+      'LinkedIn:  linkedin.com/in/vilanir',
+      'Email:     josevilanir@email.com',
+    ],
+  },
 }
 
 interface Line {
@@ -45,9 +85,22 @@ interface Line {
 }
 
 export default function TerminalApp() {
-  const [lines, setLines] = useState<Line[]>(INITIAL_OUTPUT)
+  const { lang, setLang } = useLanguageStore()
+  const [lines, setLines] = useState<Line[]>(INITIAL_OUTPUT[lang])
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  // Re-initialize output when language changes externally (e.g. via topbar toggle)
+  const prevLangRef = useRef<Lang>(lang)
+  useEffect(() => {
+    if (prevLangRef.current !== lang) {
+      prevLangRef.current = lang
+      const msg = lang === 'pt'
+        ? 'Idioma alterado para Português.'
+        : 'Language switched to English.'
+      setLines((prev) => [...prev, { type: 'system', text: msg }, { type: 'blank', text: '' }])
+    }
+  }, [lang])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -55,22 +108,48 @@ export default function TerminalApp() {
 
   const handleCommand = (cmd: string) => {
     const trimmed = cmd.trim().toLowerCase()
+    const cmds = COMMANDS[lang]
     const newLines: Line[] = [
       ...lines,
       { type: 'prompt', text: `vilanir@os:~$ ${cmd}` },
     ]
 
     if (trimmed === 'clear') {
-      setLines([{ type: 'system', text: 'Terminal limpo. Digite "help" para ajuda.' }])
+      const clearMsg = lang === 'pt'
+        ? 'Terminal limpo. Digite "help" para ajuda.'
+        : 'Terminal cleared. Type "help" for help.'
+      setLines([{ type: 'system', text: clearMsg }])
       setInput('')
       return
     }
 
-    const result = COMMANDS[trimmed]
+    // Handle lang command
+    if (trimmed === 'lang en') {
+      newLines.push({ type: 'system', text: 'Language switched to English.' })
+      newLines.push({ type: 'blank', text: '' })
+      setLines(newLines)
+      setInput('')
+      setLang('en')
+      return
+    }
+
+    if (trimmed === 'lang pt') {
+      newLines.push({ type: 'system', text: 'Idioma alterado para Português.' })
+      newLines.push({ type: 'blank', text: '' })
+      setLines(newLines)
+      setInput('')
+      setLang('pt')
+      return
+    }
+
+    const result = cmds[trimmed as keyof typeof cmds]
     if (result) {
       result.forEach((r) => newLines.push({ type: 'result', text: r }))
     } else if (trimmed !== '') {
-      newLines.push({ type: 'error', text: `comando não encontrado: ${cmd}. Digite "help".` })
+      const errMsg = lang === 'pt'
+        ? `comando não encontrado: ${cmd}. Digite "help".`
+        : `command not found: ${cmd}. Type "help".`
+      newLines.push({ type: 'error', text: errMsg })
     }
 
     newLines.push({ type: 'blank', text: '' })
@@ -82,12 +161,13 @@ export default function TerminalApp() {
     switch (type) {
       case 'system': return 'text-cyan-400'
       case 'prompt': return 'text-green-400'
-      case 'output': return 'text-yellow-300'
       case 'result': return 'text-white/80'
-      case 'error': return 'text-red-400'
-      default: return 'text-white/0'
+      case 'error':  return 'text-red-400'
+      default:       return 'text-white/0'
     }
   }
+
+  const placeholder = lang === 'pt' ? 'digite um comando...' : 'type a command...'
 
   return (
     <div className="h-full flex flex-col bg-black/60 font-mono text-sm p-4 gap-1 overflow-auto">
@@ -100,7 +180,6 @@ export default function TerminalApp() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
       <div className="flex items-center gap-2 border-t border-white/10 pt-2 mt-1">
         <span className="text-green-400 shrink-0">vilanir@os:~$</span>
         <input
@@ -108,11 +187,9 @@ export default function TerminalApp() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleCommand(input)
-          }}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleCommand(input) }}
           className="flex-1 bg-transparent text-white outline-none caret-green-400 placeholder:text-white/30"
-          placeholder="digite um comando..."
+          placeholder={placeholder}
         />
       </div>
     </div>
