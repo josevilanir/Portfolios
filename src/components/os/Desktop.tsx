@@ -77,7 +77,6 @@ export default function Desktop() {
     } catch { /* ignore */ }
   }, [])
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
-  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isDraggingRef = useRef(false)
 
   const handleIconDragStop = useCallback((id: string, x: number, y: number) => {
@@ -88,24 +87,15 @@ export default function Desktop() {
 
   const handleIconClick = useCallback((icon: IconDef) => {
     if (isDraggingRef.current) return
-    if (clickTimerRef.current) {
-      // Double click
-      clearTimeout(clickTimerRef.current)
-      clickTimerRef.current = null
-      if (icon.type === 'download') {
-        const a = document.createElement('a')
-        a.href = icon.href
-        a.download = ''
-        a.click()
-      } else {
-        openWindow(icon.id as Parameters<typeof openWindow>[0])
-      }
-      setSelectedIcon(null)
+    setSelectedIcon(icon.id)
+
+    if (icon.type === 'download') {
+      const a = document.createElement('a')
+      a.href = icon.href
+      a.download = ''
+      a.click()
     } else {
-      setSelectedIcon(icon.id)
-      clickTimerRef.current = setTimeout(() => {
-        clickTimerRef.current = null
-      }, 300)
+      openWindow(icon.id as Parameters<typeof openWindow>[0])
     }
   }, [openWindow])
 
