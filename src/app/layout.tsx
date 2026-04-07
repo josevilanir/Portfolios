@@ -36,6 +36,11 @@ export const metadata: Metadata = {
     description: "José Vilanir — Full Stack, Mobile & Data Engineer",
     images: ["/og-image.png"],
   },
+  icons: {
+    icon: "/computador.png",
+    shortcut: "/computador.png",
+    apple: "/computador.png",
+  },
 };
 
 export default function RootLayout({
