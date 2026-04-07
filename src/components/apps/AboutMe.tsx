@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MapPin, Calendar, Code2, Smartphone, Database, Globe, Atom, FileCode2, Server, FileJson, Terminal, Coffee, Image as ImageIcon, LayoutDashboard, Layers } from 'lucide-react'
+import { MapPin, Calendar, Code2, Smartphone, Database, Globe, Atom, FileCode2, Server, FileJson, Terminal, Image as ImageIcon, LayoutDashboard, Layers, Gem, GraduationCap, Languages } from 'lucide-react'
 
 /* ─── Data ────────────────────────────────────────────────────── */
 
@@ -25,7 +25,19 @@ const HIGHLIGHTS = [
     shadowColor: 'rgba(236,72,153,0.15)',
   },
   {
-    label: 'FOCO', value: 'Lógica & Dados',
+    label: 'FORMAÇÃO', value: 'ADS — IFRN',
+    icon: <GraduationCap size={20} strokeWidth={2.5}  />,
+    from: '#6366f1', to: '#8b5cf6',
+    shadowColor: 'rgba(99,102,241,0.15)',
+  },
+  {
+    label: 'IDIOMA', value: 'Inglês Fluente',
+    icon: <Languages size={20} strokeWidth={2.5}  />,
+    from: '#f59e0b', to: '#fb923c',
+    shadowColor: 'rgba(245,158,11,0.15)',
+  },
+  {
+    label: 'FOCO', value: 'Sistemas & Softwares',
     icon: <Code2 size={20} strokeWidth={2.5}  />,
     from: '#10b981', to: '#14b8a6',
     shadowColor: 'rgba(16,185,129,0.15)',
@@ -41,8 +53,9 @@ const TECH_STACK = [
   { icon: <Terminal size={18} />,  label: 'Python',     from: '#4f46e5', to: '#a5b4fc', glow: 'rgba(129,140,248,0.5)' },
   { icon: <Database size={18} />,  label: 'SQL',        from: '#c2410c', to: '#fb923c', glow: 'rgba(249,115,22,0.5)' },
   { icon: <LayoutDashboard size={18} />, label: 'HTML5',from: '#b91c1c', to: '#f87171', glow: 'rgba(239,68,68,0.5)' },
-  { icon: <Coffee size={18} />,    label: 'Java',       from: '#9a3412', to: '#fdba74', glow: 'rgba(251,146,60,0.5)' },
   { icon: <Globe size={18} />,     label: 'Next.js',    from: '#334155', to: '#94a3b8', glow: 'rgba(203,213,225,0.5)' },
+  { icon: <Gem size={18} />,       label: 'Ruby',       from: '#991b1b', to: '#f87171', glow: 'rgba(248,113,113,0.5)' },
+  { icon: <Code2 size={18} />,     label: 'Rails',      from: '#7f1d1d', to: '#ef4444', glow: 'rgba(239,68,68,0.5)' },
 ]
 
 /* ─── Subcomponents ───────────────────────────────────────────── */
@@ -182,15 +195,15 @@ export default function AboutMe() {
         }}
       >
         <p className="text-[13px] text-slate-300 leading-[1.8] font-medium m-0">
-          Desenvolvedor apaixonado por{' '}
-          <span className="text-blue-400 font-bold drop-shadow-sm">lógica e processamento de dados</span>
-          , aplicando essa robustez no desenvolvimento Full Stack e Mobile. Gosto de construir
-          sistemas que resolvem problemas reais com clareza, performance e elegância.
+          Desenvolvedor focado em construir{' '}
+          <span className="text-blue-400 font-bold drop-shadow-sm">sistemas robustos e escaláveis</span>
+          , unindo uma base sólida em lógica e processamento de dados com o desenvolvimento Full Stack
+          e Mobile. Apaixonado por transformar requisitos complexos em arquiteturas precisas e elegantes.
         </p>
       </div>
 
       {/* ── Info cards ── */}
-      <div className="grid grid-cols-3" style={{ gap: '8px' }}>
+      <div className="grid grid-cols-2 md:grid-cols-3" style={{ gap: '8px' }}>
         {HIGHLIGHTS.map((h, i) => (
           <div
             key={i}
