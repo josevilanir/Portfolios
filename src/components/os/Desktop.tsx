@@ -10,13 +10,7 @@ import Dock from './Dock'
 import WindowFrame from './WindowFrame'
 import TitleUpdater from './TitleUpdater'
 
-function subscribeMobile(cb: () => void) {
-  const mq = window.matchMedia('(max-width: 767px)')
-  mq.addEventListener('change', cb)
-  return () => mq.removeEventListener('change', cb)
-}
-const getMobileSnapshot = () => window.matchMedia('(max-width: 767px)').matches
-const getMobileServerSnapshot = () => false
+import { ALL_APPS, DESKTOP_APP_IDS, AppConfig } from '@/constants/apps'
 
 // Lazy load apps
 const AboutMe = dynamic(() => import('@/components/apps/AboutMe'))
@@ -44,17 +38,15 @@ const APP_SIZES: Record<string, { w: number; h: number }> = {
   browser: { w: 940, h: 620 },
 }
 
-type AppIconDef = { type: 'app'; labelPt: string; labelEn: string; id: string; emoji: string }
-type DownloadIconDef = { type: 'download'; labelPt: string; labelEn: string; id: string; emoji: string; href: string }
-type IconDef = AppIconDef | DownloadIconDef
+function subscribeMobile(cb: () => void) {
+  const mq = window.matchMedia('(max-width: 767px)')
+  mq.addEventListener('change', cb)
+  return () => mq.removeEventListener('change', cb)
+}
+const getMobileSnapshot = () => window.matchMedia('(max-width: 767px)').matches
+const getMobileServerSnapshot = () => false
 
-const DESKTOP_ICONS: IconDef[] = [
-  { type: 'app',      labelPt: 'Sobre Mim', labelEn: 'About Me', id: 'about',    emoji: '👤' },
-  { type: 'app',      labelPt: 'Projetos',  labelEn: 'Projects', id: 'projects', emoji: '📁' },
-  { type: 'app',      labelPt: 'Skills',    labelEn: 'Skills',   id: 'skills',   emoji: '⚡' },
-  { type: 'app',      labelPt: 'Terminal',  labelEn: 'Terminal', id: 'terminal', emoji: '🖥️' },
-  { type: 'download', labelPt: 'Currículo', labelEn: 'Resume',   id: 'resume',   emoji: '📄', href: '/Curriculum_FINAL_Polido.pdf' },
-]
+const DESKTOP_ICONS = ALL_APPS.filter(app => DESKTOP_APP_IDS.includes(app.id))
 
 const DEFAULT_ICON_POSITIONS: Record<string, { x: number; y: number }> = {
   about:    { x: 16, y: 16 },
@@ -85,11 +77,11 @@ export default function Desktop() {
     localStorage.setItem('vilanir-icon-positions', JSON.stringify(next))
   }, [iconPositions])
 
-  const handleIconClick = useCallback((icon: IconDef) => {
+  const handleIconClick = useCallback((icon: AppConfig) => {
     if (isDraggingRef.current) return
     setSelectedIcon(icon.id)
 
-    if (icon.type === 'download') {
+    if (icon.type === 'download' && icon.href) {
       const a = document.createElement('a')
       a.href = icon.href
       a.download = ''
@@ -136,7 +128,7 @@ export default function Desktop() {
                   className="flex flex-col items-center gap-2 group active:scale-95 transition-transform duration-100"
                   onClick={(e) => {
                     e.stopPropagation()
-                    if (icon.type === 'download') {
+                    if (icon.type === 'download' && icon.href) {
                       const a = document.createElement('a')
                       a.href = icon.href
                       a.download = ''
@@ -146,14 +138,9 @@ export default function Desktop() {
                     }
                   }}
                 >
-                  <div className={`w-16 h-16 rounded-2xl backdrop-blur-md
-                    border flex items-center justify-center text-3xl
-                    shadow-lg active:bg-white/25
-                    ${icon.type === 'download'
-                      ? 'border-emerald-400/40 bg-emerald-500/10'
-                      : 'border-white/20 bg-white/10'
-                    }`}>
-                    {icon.emoji}
+                  <div className="w-16 h-16 flex items-center justify-center drop-shadow-lg">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={icon.icon} alt={icon.id} className="w-full h-full object-contain" />
                   </div>
                   <span className="text-white text-[11px] font-medium text-center leading-tight
                     drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
@@ -183,22 +170,21 @@ export default function Desktop() {
                 className="cursor-default"
               >
                 <button
-                  className="flex flex-col items-center gap-1.5 w-full h-full group"
+                  className="flex flex-col items-center gap-1 w-full h-full group"
                   onClick={(e) => { e.stopPropagation(); handleIconClick(icon) }}
                 >
-                  <div className={`w-14 h-14 rounded-2xl backdrop-blur-md
-                    border flex items-center justify-center text-2xl
-                    transition-all duration-150 shadow-lg
-                    ${isSelected
-                      ? 'bg-white/30 border-white/50 scale-105'
-                      : icon.type === 'download'
-                        ? 'bg-emerald-500/10 border-emerald-400/40 group-hover:bg-emerald-500/20 group-hover:scale-105'
-                        : 'bg-white/10 border-white/20 group-hover:bg-white/20 group-hover:scale-105'
-                    }`}>
-                    {icon.emoji}
+                  <div className={`w-14 h-14 flex items-center justify-center transition-all duration-150
+                    ${isSelected ? 'brightness-75' : 'group-hover:drop-shadow-xl'}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={icon.icon} 
+                      alt={icon.id} 
+                      className={`w-full h-full object-contain transition-transform duration-150
+                        ${isSelected ? 'scale-95' : 'group-hover:scale-105'}`} 
+                    />
                   </div>
                   <span className={`text-white text-[11px] font-medium text-center
-                    leading-tight px-1 rounded
+                    leading-tight px-1 rounded shadow-sm
                     ${isSelected ? 'bg-blue-500/60' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}>
                     {lang === 'pt' ? icon.labelPt : icon.labelEn}
                   </span>

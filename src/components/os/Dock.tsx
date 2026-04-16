@@ -3,29 +3,19 @@
 import MacOSDock from '@/components/ui/mac-os-dock'
 import { useWindowStore, AppId } from '@/store/useWindowStore'
 import { useLanguageStore } from '@/store/useLanguageStore'
-
-const CDN = 'https://cdn.jim-nielsen.com/macos/1024'
-
-const DOCK_APPS = {
-  pt: [
-    { id: 'about',    name: 'Sobre Mim', icon: `${CDN}/photos-2021-05-28.png` },
-    { id: 'projects', name: 'Projetos',  icon: `${CDN}/finder-2021-09-10.png` },
-    { id: 'terminal', name: 'Terminal',  icon: `${CDN}/terminal-2021-06-03.png` },
-    { id: 'skills',   name: 'Skills',    icon: `${CDN}/notes-2021-05-25.png` },
-    { id: 'contact',  name: 'Contato',   icon: `${CDN}/mail-2021-05-25.png` },
-  ],
-  en: [
-    { id: 'about',    name: 'About Me',  icon: `${CDN}/photos-2021-05-28.png` },
-    { id: 'projects', name: 'Projects',  icon: `${CDN}/finder-2021-09-10.png` },
-    { id: 'terminal', name: 'Terminal',  icon: `${CDN}/terminal-2021-06-03.png` },
-    { id: 'skills',   name: 'Skills',    icon: `${CDN}/notes-2021-05-25.png` },
-    { id: 'contact',  name: 'Contact',   icon: `${CDN}/mail-2021-05-25.png` },
-  ],
-}
+import { ALL_APPS, DOCK_APP_IDS } from '@/constants/apps'
 
 export default function Dock() {
   const { openWindow, windows } = useWindowStore()
   const { lang } = useLanguageStore()
+
+  const dockApps = ALL_APPS
+    .filter(app => DOCK_APP_IDS.includes(app.id))
+    .map(app => ({
+      id: app.id,
+      name: lang === 'pt' ? app.labelPt : app.labelEn,
+      icon: app.icon
+    }))
 
   const openApps = windows
     .filter((w) => !w.isMinimized)
@@ -34,7 +24,7 @@ export default function Dock() {
   return (
     <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-[9998]">
       <MacOSDock
-        apps={DOCK_APPS[lang]}
+        apps={dockApps}
         onAppClick={(id) => openWindow(id as AppId)}
         openApps={openApps}
       />
