@@ -19,6 +19,32 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    id: 'sdr-crm',
+    name: 'SDR CRM + AI',
+    description: 'Plataforma avançada para equipes de Pré-Vendas com hiper-personalização via IA (Gemini), funil Kanban e gestão de leads em escala.',
+    stack: ['React', 'TypeScript', 'Supabase', 'Gemini AI', 'Tailwind'],
+    type: 'fullstack',
+    folderColor: 'text-indigo-400',
+    borderColor: 'border-indigo-500/60',
+    shadowColor: '0 0 20px rgba(99,102,241,0.35)',
+    glowBg: 'rgba(99,102,241,0.06)',
+    github: 'https://github.com/josevilanir/SDR-CRM',
+    demo: 'https://sdr-crm-cyan.vercel.app/login',
+  },
+  {
+    id: 'olimpiadas-ibb',
+    name: 'Olimpíadas IBB',
+    description: 'Sistema de gestão de inscrições esportivas desenvolvido como freelancer para a Igreja Batista Bereana, atendendo requisitos personalizados de fluxo de dados, dashboard administrativo e automação de comprovantes.',
+    stack: ['React', 'Node.js', 'PostgreSQL', 'Prisma', 'jsPDF'],
+    type: 'fullstack',
+    folderColor: 'text-emerald-400',
+    borderColor: 'border-emerald-500/60',
+    shadowColor: '0 0 20px rgba(16,185,129,0.35)',
+    glowBg: 'rgba(16,185,129,0.06)',
+    github: 'https://github.com/josevilanir/olimpiedas_Ibb_Forms',
+    demo: 'https://www.olimpiadasibb.com.br/',
+  },
+  {
     id: 'gym-tracker',
     name: 'Gym Tracker',
     description: 'App mobile para rastreamento de treinos, séries e evolução física com interface fluida e offline-first.',
